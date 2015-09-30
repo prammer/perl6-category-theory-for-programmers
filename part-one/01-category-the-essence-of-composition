@@ -1,0 +1,52 @@
+#!/usr/bin/env perl6
+
+# http://bartoszmilewski.com/2014/11/04/category-the-essence-of-composition/
+
+# 1 implement id
+# Implement, as best as you can, the identity function in your favorite language (or the second favorite, if your favorite language happens to be Haskell).
+
+#multi sub id ($x) { $x }
+multi sub id (*@_) { @_ }
+
+# like C++   template<class T> T id(T x) { return x; }
+#role Any[::T] {
+    # which of these?
+#    method id(T $x --> T) { $x }
+#    sub id(T $x --> T) { $x }
+#    T sub id(T $x) { $x }
+#    T method id(T $x) { $x }
+#}
+
+
+# 2 implement function composition
+# Implement the composition function in your favorite language. It takes two functions as arguments and returns a function that is their composition.
+
+sub compose (&g, &f) { sub (|c) { g(f(|c)) } }
+
+# 3 test that composition respect identity
+# Write a program that tries to test that your composition function respects identity.
+
+use Test;
+sub dub ($x) { $x ~ $x }
+#sub add (Int $x, Int $y) { $x + $y }
+#sub alsoadd (|c) { add(|c) }
+#is add(2,2), 4, 'add works';
+#is alsoadd(2,2), 4, 'alsoadd works';
+is dub('a'), 'aa', 'dub works';
+my $c = compose(&dub, &id);
+#$c.perl.say;
+is $c('a'), 'aa', 'composed gets same';
+#is $c(2,2), 4, 'compose gets same';
+#is compose(&add, &id)(2,2), 4, 'compose gets same';
+
+
+# 4. Is the world-wide web a category in any sense? Are links morphisms?
+# Not really.  Links don't necessarily compose.  If site A links to site B, and 
+# site B links to site C, it does not necessarily follow that site A links
+# directly to site C.
+
+# 5. Is Facebook a category, with people as objects and friendships as morphisms?
+# In the general case, no.  Friends of friends aren't necessarily my friend.
+
+# 6. When is a directed graph a category?
+# When all nodes are connected directly.
